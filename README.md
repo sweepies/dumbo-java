@@ -17,7 +17,8 @@ You can download the latest build from [Jenkins](https://ci.amberfall.science/jo
 
 # Commands
 Command triggers can be changed in the configuration file.
-| Command | Description
+
+| Command | Description |
 | --- | --- |
 | Random quote | Prints a random Qball quote in the channel. |
 | Send line | Sends a raw line of text to the IRC server. |
@@ -25,7 +26,8 @@ Command triggers can be changed in the configuration file.
 
 # Usage
 `java -jar dumbo_irc.jar`
-| Option | Description
+
+| Option | Description |
 | --- | --- |
 | `--makeconf` | Generates configuration files without running the bot. Useful when running for the first time. |
 | `--clean` | Resets the current configuration files to the default values. |
