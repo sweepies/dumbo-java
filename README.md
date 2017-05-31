@@ -19,14 +19,14 @@ You can download the latest build from [Jenkins](https://ci.amberfall.science/jo
 Command triggers can be changed in the configuration file.
 | Command | Description
 | --- | --- |
-| Random quote | Prints a random Qball quote in the channel.
-| Send line | Sends a raw line of text to the IRC server.
-| Tacos | Prints a configurable amount of tacos in the channel.
+| Random quote | Prints a random Qball quote in the channel. |
+| Send line | Sends a raw line of text to the IRC server. |
+| Tacos | Prints a configurable amount of tacos in the channel. |
 
 # Usage
 `java -jar dumbo_irc.jar`
 | Option | Description
 | --- | --- |
-| `--makeconf` | Generates configuration files without running the bot. Useful when running for the first time.
-| `--clean` | Resets the current configuration files to the default values.
-| `--update` | Fetch the most recent quotes.json file from the [central repository](https://github.com/sweepyoface/dumbo-quotes).
+| `--makeconf` | Generates configuration files without running the bot. Useful when running for the first time. |
+| `--clean` | Resets the current configuration files to the default values. |
+| `--update` | Fetch the most recent quotes.json file from the [central repository](https://github.com/sweepyoface/dumbo-quotes). |
