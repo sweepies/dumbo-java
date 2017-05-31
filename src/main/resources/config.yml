@@ -1,0 +1,41 @@
+# The server's hostname
+host: irc.spi.gt
+
+# Whether or not to use SSL (you'll have to change the port accordingly)
+ssl: true
+
+# The server portt
+port: 6697
+
+# The user modes the bot will automatically set
+modes: B
+
+# The bot's nickname
+nickname: Dumbo
+
+# The bot's realname
+realname: Dumbo
+
+# The bot's ident (and NickServ login)
+ident: Dumbo
+
+# The bot's NickServ password
+password: 1234
+
+# The character commands will be prefixed with
+delimiter: .
+
+# List of channels for the bot to autojoin
+channels:
+  - '#amberfall'
+
+# List of hostnames can perform operator commands
+ops:
+  - 'amberfall.science'
+
+# List of hostnames that cannot perform any commands
+blocked:
+  - 'irc.sketchysite.com'
+
+# Number of tacos to send with the tacos command
+tacos: 20

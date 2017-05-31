@@ -1,0 +1,17 @@
+# The words that will trigger the bot (prefixed by the delimiter in the config)
+
+# Get a random quote
+randomquote:
+  - 'quote'
+  - 'dumbo'
+  - 'dumball'
+  - 'dum'
+
+# Send a raw line
+sendline:
+  - 'sendline'
+  - 'rawline'
+
+# Get some tacos
+tacos:
+  - 'tacos'
