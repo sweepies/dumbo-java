@@ -43,7 +43,6 @@ public class Dumbo extends ListenerAdapter {
         Dumbo.parser = Options.getParser();
         OptionSet options = parseOpts(args);
 
-
         if (options.has("clean")) {
             try {
                 File configFile = new File("config.yml");
@@ -124,42 +123,10 @@ public class Dumbo extends ListenerAdapter {
             autoJoinChannels.add(config.getChannels()[i]);
         }
 
-        Configuration builder = new Configuration.Builder()
-                .setName(config.getNickname())
-                .setRealName(config.getRealname())
-                .setNickservNick(config.getIdent())
-                .setNickservPassword(config.getPassword())
-                .setLogin(config.getIdent())
-                .setAutoSplitMessage(true)
-                .setEncoding(StandardCharsets.UTF_8)
-                .setAutoReconnect(true)
-                .addServer(config.getHost(), config.getPort())
-                .addAutoJoinChannels(autoJoinChannels)
-                .addAutoJoinChannels(autoJoinChannels)
-                .addListener(new Dumbo())
-                .buildConfiguration();
-
-        Configuration builderSSL = new Configuration.Builder()
-                .setName(config.getNickname())
-                .setRealName(config.getRealname())
-                .setNickservNick(config.getIdent())
-                .setNickservPassword(config.getPassword())
-                .setLogin(config.getIdent())
-                .setAutoSplitMessage(true)
-                .setEncoding(StandardCharsets.UTF_8)
-                .setAutoReconnect(true)
-                .addServer(config.getHost(), config.getPort())
-                .addAutoJoinChannels(autoJoinChannels)
-                .setSocketFactory(SSLSocketFactory.getDefault())
-                .addListener(new Dumbo())
-                .buildConfiguration();
-
         if (config.getSSL()) {
-            PircBotX bot = new PircBotX(builderSSL);
-            bot.startBot();
+            new PircBotX(makeConfig(true, autoJoinChannels)).startBot();
         } else {
-            PircBotX bot = new PircBotX(builder);
-            bot.startBot();
+            new PircBotX(makeConfig(false, autoJoinChannels)).startBot();
         }
 
     }
@@ -173,6 +140,39 @@ public class Dumbo extends ListenerAdapter {
             System.exit(1);
         }
         return null;
+    }
+
+    public static Configuration makeConfig(Boolean useSSL, List<String> autoJoinChannels) {
+        if (useSSL) {
+            return new Configuration.Builder()
+                    .setName(config.getNickname())
+                    .setRealName(config.getRealname())
+                    .setNickservNick(config.getIdent())
+                    .setNickservPassword(config.getPassword())
+                    .setLogin(config.getIdent())
+                    .setAutoSplitMessage(true)
+                    .setEncoding(StandardCharsets.UTF_8)
+                    .setAutoReconnect(true)
+                    .addServer(config.getHost(), config.getPort())
+                    .addAutoJoinChannels(autoJoinChannels)
+                    .setSocketFactory(SSLSocketFactory.getDefault())
+                    .addListener(new Dumbo())
+                    .buildConfiguration();
+        } else {
+            return new Configuration.Builder()
+                    .setName(config.getNickname())
+                    .setRealName(config.getRealname())
+                    .setNickservNick(config.getIdent())
+                    .setNickservPassword(config.getPassword())
+                    .setLogin(config.getIdent())
+                    .setAutoSplitMessage(true)
+                    .setEncoding(StandardCharsets.UTF_8)
+                    .setAutoReconnect(true)
+                    .addServer(config.getHost(), config.getPort())
+                    .addAutoJoinChannels(autoJoinChannels)
+                    .addListener(new Dumbo())
+                    .buildConfiguration();
+        }
     }
 
     public static void getQuotes(String[] args) {
@@ -223,9 +223,7 @@ public class Dumbo extends ListenerAdapter {
         String[] msg = ev.getMessage().trim().split("\\s+");
 
         List<String> blockedList = new ArrayList<>();
-        for (int i2 = 0; i2 < config.getBlocked().length; i2++) {
-            blockedList.add(config.getBlocked()[i2]);
-        }
+        Collections.addAll(blockedList, config.getBlocked());
 
         if (blockedList.contains(ev.getUser().getHostname())) {
             log.warn("Command blocked: " + ev.getMessage() + "(Hostname in blocked list)");
@@ -248,9 +246,7 @@ public class Dumbo extends ListenerAdapter {
             for (int i = 0; i < commands.getSendline().length; i++) {
                 if (msg[0].substring(1).equalsIgnoreCase(commands.getSendline()[i]) && msg[0].charAt(0) == config.getDelimiter()) {
                     List<String> opsList = new ArrayList<>();
-                    for (int i2 = 0; i2 < config.getOps().length; i2++) {
-                        opsList.add(config.getOps()[i2]);
-                    }
+                    Collections.addAll(opsList, config.getOps());
                     if (opsList.contains(ev.getUser().getHostname())) {
                         PircBotX bot = ev.getBot();
                         OutputRaw raw = new OutputRaw(bot);
@@ -269,7 +265,6 @@ public class Dumbo extends ListenerAdapter {
                     ev.respondWith(String.join("", Collections.nCopies(config.getTacos(), "\uD83C\uDF2E"))); // Send tacos
                     break;
                 }
-                break;
             }
 
         }
