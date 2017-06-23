@@ -10,6 +10,7 @@ import org.pircbotx.PircBotX;
 import org.pircbotx.hooks.ListenerAdapter;
 import org.pircbotx.hooks.events.ConnectEvent;
 import org.pircbotx.hooks.types.GenericMessageEvent;
+import org.pircbotx.output.OutputChannel;
 import org.pircbotx.output.OutputIRC;
 import org.pircbotx.output.OutputRaw;
 import org.slf4j.Logger;
@@ -234,7 +235,13 @@ public class Dumbo extends ListenerAdapter {
                 if (msg[0].substring(1).equalsIgnoreCase(commands.getRandomquote()[i]) && msg[0].charAt(0) == config.getDelimiter()) {
                     String quote = randomQuote();
                     if (quote != null) {
-                        ev.respondWith(quote.replaceAll("Qball", "Qbal" + "\u200B" + "l")); // Zero width space to prevent pinging
+                        if (quote.contains("\n")) {
+                            for (String q : quote.split("\n")) {
+                                ev.respondWith(q.replaceAll("Qball", "Qbal" + "\u200B" + "l")); // Zero width space to prevent pinging
+                            }
+                        } else {
+                            ev.respondWith(quote.replaceAll("Qball", "Qbal" + "\u200B" + "l"));
+                        }
                     } else {
                         log.error("Quotes file could not be read! Aborting.");
                     }
