@@ -7,12 +7,6 @@ import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.pircbotx.Configuration;
 import org.pircbotx.PircBotX;
-import org.pircbotx.hooks.ListenerAdapter;
-import org.pircbotx.hooks.events.ConnectEvent;
-import org.pircbotx.hooks.types.GenericMessageEvent;
-import org.pircbotx.output.OutputChannel;
-import org.pircbotx.output.OutputIRC;
-import org.pircbotx.output.OutputRaw;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.yaml.snakeyaml.Yaml;
@@ -24,12 +18,12 @@ import java.io.FileReader;
 import java.io.InputStream;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
-import java.util.ArrayList;
-import java.util.Collections;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Random;
 
-public class Dumbo extends ListenerAdapter {
+
+public class Dumbo {
 
     private static Config config;
 
@@ -37,21 +31,36 @@ public class Dumbo extends ListenerAdapter {
 
     private static OptionParser parser;
 
+    private static OptionSet options;
+
     private static Logger log = LoggerFactory.getLogger("science.amberfall.dumbo_irc.Dumbo");
 
     public static void main(String[] args) throws Exception {
 
         Dumbo.parser = Options.getParser();
-        OptionSet options = parseOpts(args);
 
+        try {
+            options = parser.parse(args);
+        } catch (joptsimple.OptionException e) {
+            System.out.println("Error: " + e.getMessage());
+            System.exit(1);
+        }
+
+        assert options != null;
         if (options.has("clean")) {
             try {
                 File configFile = new File("config.yml");
                 System.out.println("Deleting config.yml..");
-                configFile.delete();
+                if (!configFile.delete()) {
+                    System.out.println("Unable to clean.");
+                    System.exit(1);
+                }
                 File commandsFile = new File("commands.yml");
                 System.out.println("Deleting commands.yml..");
-                commandsFile.delete();
+                if (!commandsFile.delete()) {
+                    System.out.println("Unable to clean.");
+                    System.exit(1);
+                }
             } catch (Exception e) {
                 System.out.println("Unable to clean: ");
                 e.printStackTrace();
@@ -119,31 +128,14 @@ public class Dumbo extends ListenerAdapter {
 
         getQuotes(args);
 
-        List<String> autoJoinChannels = new ArrayList<>();
-        for (int i = 0; i < config.getChannels().length; i++) {
-            autoJoinChannels.add(config.getChannels()[i]);
-        }
-
-        if (config.getSSL()) {
-            new PircBotX(makeConfig(true, autoJoinChannels)).startBot();
-        } else {
-            new PircBotX(makeConfig(false, autoJoinChannels)).startBot();
-        }
-
+        new PircBotX(makeConfig()).startBot();
     }
 
-    public static OptionSet parseOpts(String[] args) {
-        try {
-            OptionSet options = parser.parse(args);
-            return options;
-        } catch (joptsimple.OptionException e) {
-            System.out.println("Error: " + e.getMessage());
-            System.exit(1);
-        }
-        return null;
-    }
+    private static Configuration makeConfig() {
 
-    public static Configuration makeConfig(Boolean useSSL, List<String> autoJoinChannels) {
+        Boolean useSSL = config.getSSL();
+        List<String> autoJoinChannels = Arrays.asList(config.getChannels());
+
         if (useSSL) {
             return new Configuration.Builder()
                     .setName(config.getNickname())
@@ -156,8 +148,9 @@ public class Dumbo extends ListenerAdapter {
                     .setAutoReconnect(true)
                     .addServer(config.getHost(), config.getPort())
                     .addAutoJoinChannels(autoJoinChannels)
+                    // SSL
                     .setSocketFactory(SSLSocketFactory.getDefault())
-                    .addListener(new Dumbo())
+                    .addListener(new Listener(config, commands, log))
                     .buildConfiguration();
         } else {
             return new Configuration.Builder()
@@ -171,16 +164,16 @@ public class Dumbo extends ListenerAdapter {
                     .setAutoReconnect(true)
                     .addServer(config.getHost(), config.getPort())
                     .addAutoJoinChannels(autoJoinChannels)
-                    .addListener(new Dumbo())
+                    .addListener(new Listener(config, commands, log))
                     .buildConfiguration();
         }
     }
 
-    public static void getQuotes(String[] args) {
+    private static void getQuotes(String[] args) {
 
-        OptionSet options = parseOpts(args);
         File file = new File("quotes.json");
 
+        assert options != null;
         if (file.exists() && !options.has("update")) {
             System.out.println("Quotes file already exists, continuing.");
         } else {
@@ -196,7 +189,7 @@ public class Dumbo extends ListenerAdapter {
         }
     }
 
-    public String randomQuote() {
+    static String randomQuote() {
         try {
             FileReader reader = new FileReader("quotes.json");
             Gson gson = new Gson();
@@ -209,71 +202,5 @@ public class Dumbo extends ListenerAdapter {
             e.printStackTrace();
         }
         return null;
-    }
-
-    @Override
-    public void onConnect(ConnectEvent ev) {
-        PircBotX bot = ev.getBot();
-        OutputIRC irc = new OutputIRC(bot);
-        irc.mode(bot.getNick(), "+" + config.getModes());
-    }
-
-    @Override
-    public void onGenericMessage(GenericMessageEvent ev) {
-
-        String[] msg = ev.getMessage().trim().split("\\s+");
-
-        List<String> blockedList = new ArrayList<>();
-        Collections.addAll(blockedList, config.getBlocked());
-
-        if (blockedList.contains(ev.getUser().getHostname())) {
-            log.warn("Command blocked: " + ev.getMessage() + "(Hostname in blocked list)");
-        } else {
-
-            // Random quote command
-            for (int i = 0; i < commands.getRandomquote().length; i++) {
-                if (msg[0].substring(1).equalsIgnoreCase(commands.getRandomquote()[i]) && msg[0].charAt(0) == config.getDelimiter()) {
-                    String quote = randomQuote();
-                    if (quote != null) {
-                        if (quote.contains("\n")) {
-                            for (String q : quote.split("\n")) {
-                                ev.respondWith(q.replaceAll("Qball", "Qbal" + "\u200B" + "l")); // Zero width space to prevent pinging
-                            }
-                        } else {
-                            ev.respondWith(quote.replaceAll("Qball", "Qbal" + "\u200B" + "l"));
-                        }
-                    } else {
-                        log.error("Quotes file could not be read! Aborting.");
-                    }
-                    break;
-                }
-            }
-
-            // Sendline command
-            for (int i = 0; i < commands.getSendline().length; i++) {
-                if (msg[0].substring(1).equalsIgnoreCase(commands.getSendline()[i]) && msg[0].charAt(0) == config.getDelimiter()) {
-                    List<String> opsList = new ArrayList<>();
-                    Collections.addAll(opsList, config.getOps());
-                    if (opsList.contains(ev.getUser().getHostname())) {
-                        PircBotX bot = ev.getBot();
-                        OutputRaw raw = new OutputRaw(bot);
-                        raw.rawLine(ev.getMessage().substring(msg[0].length() + 1)); // Send a raw line removing the command and space before it
-                        break;
-                    } else {
-                        log.warn("Command blocked: " + ev.getMessage() + "(Hostname not in ops list)");
-                    }
-                    break;
-                }
-            }
-
-            // Tacos command
-            for (int i = 0; i < commands.getTacos().length; i++) {
-                if (msg[0].substring(1).equalsIgnoreCase(commands.getTacos()[i]) && msg[0].charAt(0) == config.getDelimiter()) {
-                    ev.respondWith(String.join("", Collections.nCopies(config.getTacos(), "\uD83C\uDF2E"))); // Send tacos
-                    break;
-                }
-            }
-
-        }
     }
 }
