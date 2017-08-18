@@ -4,9 +4,9 @@ package science.amberfall.dumbo_irc;
 
 class Commands {
 
-    String[] randomquote;
-    String[] sendline;
-    String[] tacos;
+    public String[] randomquote;
+    public String[] sendline;
+    public String[] tacos;
 
     String[] getRandomquote() {
         return randomquote;

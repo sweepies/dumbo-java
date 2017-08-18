@@ -4,19 +4,19 @@ package science.amberfall.dumbo_irc;
 
 class Config {
 
-    String host;
-    Boolean ssl;
-    Integer port;
-    String modes;
-    String nickname;
-    String realname;
-    String ident;
-    String password;
-    Character delimiter;
-    String[] channels;
-    String[] ops;
-    String[] blocked;
-    Integer tacos;
+    public String host;
+    public Boolean ssl;
+    public Integer port;
+    public String modes;
+    public String nickname;
+    public String realname;
+    public String ident;
+    public String password;
+    public Character delimiter;
+    public String[] channels;
+    public String[] ops;
+    public String[] blocked;
+    public Integer tacos;
 
     String getHost() {
         return host;
