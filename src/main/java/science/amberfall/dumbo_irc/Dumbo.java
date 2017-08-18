@@ -1,6 +1,5 @@
 package science.amberfall.dumbo_irc;
 
-import com.google.gson.Gson;
 import joptsimple.OptionParser;
 import joptsimple.OptionSet;
 import org.apache.commons.io.FileUtils;
@@ -20,8 +19,6 @@ import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Random;
-
 
 public class Dumbo {
 
@@ -126,50 +123,48 @@ public class Dumbo {
             System.exit(0);
         }
 
-        getQuotes(args);
+        getQuotes();
 
         new PircBotX(makeConfig()).startBot();
     }
 
     private static Configuration makeConfig() {
 
-        Boolean useSSL = config.getSSL();
         List<String> autoJoinChannels = Arrays.asList(config.getChannels());
 
-        if (useSSL) {
-            return new Configuration.Builder()
-                    .setName(config.getNickname())
-                    .setRealName(config.getRealname())
-                    .setNickservNick(config.getIdent())
-                    .setNickservPassword(config.getPassword())
-                    .setLogin(config.getIdent())
-                    .setAutoSplitMessage(true)
-                    .setEncoding(StandardCharsets.UTF_8)
-                    .setAutoReconnect(true)
-                    .addServer(config.getHost(), config.getPort())
-                    .addAutoJoinChannels(autoJoinChannels)
-                    // SSL
-                    .setSocketFactory(SSLSocketFactory.getDefault())
-                    .addListener(new Listener(config, commands, log))
-                    .buildConfiguration();
-        } else {
-            return new Configuration.Builder()
-                    .setName(config.getNickname())
-                    .setRealName(config.getRealname())
-                    .setNickservNick(config.getIdent())
-                    .setNickservPassword(config.getPassword())
-                    .setLogin(config.getIdent())
-                    .setAutoSplitMessage(true)
-                    .setEncoding(StandardCharsets.UTF_8)
-                    .setAutoReconnect(true)
-                    .addServer(config.getHost(), config.getPort())
-                    .addAutoJoinChannels(autoJoinChannels)
-                    .addListener(new Listener(config, commands, log))
-                    .buildConfiguration();
-        }
+        return config.getSSL() ?
+                new Configuration.Builder()
+                        .setName(config.getNickname())
+                        .setRealName(config.getRealname())
+                        .setNickservNick(config.getIdent())
+                        .setNickservPassword(config.getPassword())
+                        .setLogin(config.getIdent())
+                        .setAutoSplitMessage(true)
+                        .setEncoding(StandardCharsets.UTF_8)
+                        .setAutoReconnect(true)
+                        .addServer(config.getHost(), config.getPort())
+                        .addAutoJoinChannels(autoJoinChannels)
+                        // SSL
+                        .setSocketFactory(SSLSocketFactory.getDefault())
+                        .addListener(new Listener(config, commands, log))
+                        .buildConfiguration()
+                :
+                new Configuration.Builder()
+                        .setName(config.getNickname())
+                        .setRealName(config.getRealname())
+                        .setNickservNick(config.getIdent())
+                        .setNickservPassword(config.getPassword())
+                        .setLogin(config.getIdent())
+                        .setAutoSplitMessage(true)
+                        .setEncoding(StandardCharsets.UTF_8)
+                        .setAutoReconnect(true)
+                        .addServer(config.getHost(), config.getPort())
+                        .addAutoJoinChannels(autoJoinChannels)
+                        .addListener(new Listener(config, commands, log))
+                        .buildConfiguration();
     }
 
-    private static void getQuotes(String[] args) {
+    private static void getQuotes() {
 
         File file = new File("quotes.json");
 
@@ -187,20 +182,5 @@ public class Dumbo {
                 System.exit(1);
             }
         }
-    }
-
-    static String randomQuote() {
-        try {
-            FileReader reader = new FileReader("quotes.json");
-            Gson gson = new Gson();
-            Quotes quotes = gson.fromJson(reader, Quotes.class);
-            String[] quotesList = quotes.getQuotes();
-            Random random = new Random();
-            Integer quote = random.nextInt(quotesList.length);
-            return quotesList[quote];
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        return null;
     }
 }

@@ -4,10 +4,10 @@ host: irc.spi.gt
 # Whether or not to use SSL (you'll have to change the port accordingly)
 ssl: true
 
-# The server portt
+# The server port
 port: 6697
 
-# The user modes the bot will automatically set
+# The user modes the bot will automatically set. This is in IRC format (a string, eg. 'BXG')
 modes: B
 
 # The bot's nickname
@@ -31,7 +31,7 @@ channels:
 
 # List of hostnames can perform operator commands
 ops:
-  - 'amberfall.science'
+  - 'irc.amberfall.science'
 
 # List of hostnames that cannot perform any commands
 blocked:

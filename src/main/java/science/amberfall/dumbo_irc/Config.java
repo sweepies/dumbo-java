@@ -2,71 +2,71 @@ package science.amberfall.dumbo_irc;
 
 // Class to parse the config file into
 
-public class Config {
+class Config {
 
-    public String host;
-    public Boolean ssl;
-    public Integer port;
-    public String modes;
-    public String nickname;
-    public String realname;
-    public String ident;
-    public String password;
-    public Character delimiter;
-    public String[] channels;
-    public String[] ops;
-    public String[] blocked;
-    public Integer tacos;
+    String host;
+    Boolean ssl;
+    Integer port;
+    String modes;
+    String nickname;
+    String realname;
+    String ident;
+    String password;
+    Character delimiter;
+    String[] channels;
+    String[] ops;
+    String[] blocked;
+    Integer tacos;
 
-    public String getHost() {
+    String getHost() {
         return host;
     }
 
-    public Boolean getSSL() {
+    Boolean getSSL() {
         return ssl;
     }
 
-    public Integer getPort() {
+    Integer getPort() {
         return port;
     }
 
-    public String getModes() {
+    String getModes() {
         return modes;
     }
 
-    public String getNickname() {
+    String getNickname() {
         return nickname;
     }
 
-    public String getRealname() {
+    String getRealname() {
         return realname;
     }
 
-    public String getIdent() {
+    String getIdent() {
         return ident;
     }
 
-    public String getPassword() {
+    String getPassword() {
         return password;
     }
 
-    public Character getDelimiter() {
+    Character getDelimiter() {
         return delimiter;
     }
 
-    public String[] getChannels() {
+    String[] getChannels() {
         return channels;
     }
 
-    public String[] getOps() {
+    String[] getOps() {
         return ops;
     }
 
-    public String[] getBlocked() {
+    String[] getBlocked() {
         return blocked;
     }
 
-    public Integer getTacos() {
+    Integer getTacos() {
         return tacos;
     }
 

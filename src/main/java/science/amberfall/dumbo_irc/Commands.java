@@ -2,21 +2,21 @@ package science.amberfall.dumbo_irc;
 
 // Class to parse the commands file into
 
-public class Commands {
+class Commands {
 
-    public String[] randomquote;
-    public String[] sendline;
-    public String[] tacos;
+    String[] randomquote;
+    String[] sendline;
+    String[] tacos;
 
-    public String[] getRandomquote() {
+    String[] getRandomquote() {
         return randomquote;
     }
 
-    public String[] getSendline() {
+    String[] getSendline() {
         return sendline;
     }
 
-    public String[] getTacos() {
+    String[] getTacos() {
         return tacos;
     }
 
