@@ -55,7 +55,7 @@ public class Listener extends ListenerAdapter {
                     String quote = QuoteHandler.randomQuote();
 
                     if (quote != null) {
-                        ev.respondWith(quote.replaceAll("Qball", "Qbal" + "\u200B" + "l")); // Zero width space to prevent pinging
+                        Arrays.stream(quote.split("\n")).forEach(l -> ev.respondWith(l.replaceAll("Qball", "Qbal" + "\u200B" + "l")));
                     } else {
                         log.error("Quotes file could not be read! Aborting.");
                     }
