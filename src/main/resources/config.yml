@@ -29,11 +29,11 @@ delimiter: .
 channels:
   - '#amberfall'
 
-# List of hostnames can perform operator commands
+# List of hostnames can perform operator commands, accepts regex
 ops:
   - 'irc.amberfall.science'
 
-# List of hostnames that cannot perform any commands
+# List of hostnames that cannot perform any commands, accepts regex
 blocked:
   - 'irc.sketchysite.com'
 

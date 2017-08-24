@@ -1,13 +1,12 @@
 package science.amberfall.dumbo_irc.commands;
 
-import com.google.common.collect.Sets;
 import org.pircbotx.PircBotX;
 import org.pircbotx.hooks.types.GenericMessageEvent;
 import org.pircbotx.output.OutputRaw;
 import org.pircbotx.output.OutputUser;
 import org.slf4j.Logger;
 
-import java.util.HashSet;
+import java.util.Arrays;
 
 public class SendLineCommand {
 
@@ -25,10 +24,9 @@ public class SendLineCommand {
 
     public void runCommand() {
 
-        HashSet<String> opsSet = Sets.newHashSet(ops);
         PircBotX bot = event.getBot();
 
-        if (opsSet.contains(event.getUser().getHostname())) {
+        if (Arrays.stream(ops).anyMatch(event.getUser().getHostname()::matches)) {
             OutputRaw raw = new OutputRaw(bot);
             raw.rawLine(event.getMessage().substring(message[0].length() + 1)); // Send a raw line removing the command and space before it
         } else {

@@ -46,7 +46,7 @@ public class Listener extends ListenerAdapter {
             HashSet<String> blockedSet = Sets.newHashSet(config.getBlocked());
 
             // If the user is blocked, do nothing
-            if (!blockedSet.contains(ev.getUser().getHostname())) {
+            if (blockedSet.stream().noneMatch(ev.getUser().getHostname()::matches)) {
 
                 if (Arrays.stream(commands.getRandomquote()).anyMatch(msg[0].substring(1)::equalsIgnoreCase)) {
 
