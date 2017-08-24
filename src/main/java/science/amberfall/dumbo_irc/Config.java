@@ -1,7 +1,10 @@
 package science.amberfall.dumbo_irc;
 
+import lombok.Getter;
+
 // Class to parse the config file into
 
+@Getter
 class Config {
 
     public String host;
@@ -17,57 +20,5 @@ class Config {
     public String[] ops;
     public String[] blocked;
     public Integer tacos;
-
-    String getHost() {
-        return host;
-    }
-
-    Boolean getSSL() {
-        return ssl;
-    }
-
-    Integer getPort() {
-        return port;
-    }
-
-    String getModes() {
-        return modes;
-    }
-
-    String getNickname() {
-        return nickname;
-    }
-
-    String getRealname() {
-        return realname;
-    }
-
-    String getIdent() {
-        return ident;
-    }
-
-    String getPassword() {
-        return password;
-    }
-
-    Character getDelimiter() {
-        return delimiter;
-    }
-
-    String[] getChannels() {
-        return channels;
-    }
-
-    String[] getOps() {
-        return ops;
-    }
-
-    String[] getBlocked() {
-        return blocked;
-    }
-
-    Integer getTacos() {
-        return tacos;
-    }
 
 }

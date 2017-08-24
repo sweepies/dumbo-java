@@ -1,5 +1,6 @@
 package science.amberfall.dumbo_irc;
 
+import com.google.common.collect.Sets;
 import joptsimple.OptionParser;
 import joptsimple.OptionSet;
 import org.apache.commons.io.FileUtils;
@@ -10,6 +11,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.yaml.snakeyaml.Yaml;
 
+import javax.net.SocketFactory;
 import javax.net.ssl.SSLSocketFactory;
 import java.io.File;
 import java.io.FileOutputStream;
@@ -18,7 +20,9 @@ import java.io.InputStream;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 public class Dumbo {
 
@@ -130,38 +134,22 @@ public class Dumbo {
 
     private static Configuration makeConfig() {
 
-        List<String> autoJoinChannels = Arrays.asList(config.getChannels());
+        HashSet<String> autoJoinChannels = Sets.newHashSet(config.getChannels());
 
-        return config.getSSL() ?
-                new Configuration.Builder()
-                        .setName(config.getNickname())
-                        .setRealName(config.getRealname())
-                        .setNickservNick(config.getIdent())
-                        .setNickservPassword(config.getPassword())
-                        .setLogin(config.getIdent())
-                        .setAutoSplitMessage(true)
-                        .setEncoding(StandardCharsets.UTF_8)
-                        .setAutoReconnect(true)
-                        .addServer(config.getHost(), config.getPort())
-                        .addAutoJoinChannels(autoJoinChannels)
-                        // SSL
-                        .setSocketFactory(SSLSocketFactory.getDefault())
-                        .addListener(new Listener(config, commands, log))
-                        .buildConfiguration()
-                :
-                new Configuration.Builder()
-                        .setName(config.getNickname())
-                        .setRealName(config.getRealname())
-                        .setNickservNick(config.getIdent())
-                        .setNickservPassword(config.getPassword())
-                        .setLogin(config.getIdent())
-                        .setAutoSplitMessage(true)
-                        .setEncoding(StandardCharsets.UTF_8)
-                        .setAutoReconnect(true)
-                        .addServer(config.getHost(), config.getPort())
-                        .addAutoJoinChannels(autoJoinChannels)
-                        .addListener(new Listener(config, commands, log))
-                        .buildConfiguration();
+        return new Configuration.Builder()
+                .setName(config.getNickname())
+                .setRealName(config.getRealname())
+                .setNickservNick(config.getIdent())
+                .setNickservPassword(config.getPassword())
+                .setLogin(config.getIdent())
+                .setAutoSplitMessage(true)
+                .setEncoding(StandardCharsets.UTF_8)
+                .setAutoReconnect(true)
+                .addServer(config.getHost(), config.getPort())
+                .addAutoJoinChannels(autoJoinChannels)
+                .setSocketFactory(config.getSsl() ? SSLSocketFactory.getDefault() : SocketFactory.getDefault())
+                .addListener(new Listener(config, commands, log))
+                .buildConfiguration();
     }
 
     private static void getQuotes() {
