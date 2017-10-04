@@ -7,7 +7,7 @@
 This is the Java version of the [Dumbo](https://github.com/sweepyoface/dumbo) IRC bot. This version is more polished and is generally nicer.
 
 # Downloading
-You can download the latest build from [Jenkins](https://ci.amberfall.science/job/Dumbo-Java/).
+You can download the latest build from [Jenkins](https://ci.sweepy.pw/job/Dumbo-Java/).
 
 # Building
 1. Install [Apache Maven](https://maven.apache.org/).
