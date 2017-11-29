@@ -31,7 +31,9 @@ public class Listener extends ListenerAdapter {
     public void onConnect(ConnectEvent ev) {
         PircBotX bot = ev.getBot();
         OutputIRC irc = new OutputIRC(bot);
-        irc.mode(bot.getNick(), "+" + config.getModes());
+        // Set user modes
+        irc.mode(bot.getNick(), "+" + config.getAddModes());
+        irc.mode(bot.getNick(), "-" + config.getRemoveModes());
     }
 
     @Override
@@ -43,22 +45,27 @@ public class Listener extends ListenerAdapter {
         // If the first character is the command operator
         if (msg[0].charAt(0) == delimiter) {
 
-            HashSet<String> blockedSet = Sets.newHashSet(config.getBlocked());
+            // The command without the operator (the first character)
+            final String command = msg[0].substring(1);
 
-            // If the user is blocked, do nothing
+            // Convert blocked hosts array to iterable HashSet
+            final HashSet<String> blockedSet = Sets.newHashSet(config.getBlocked());
+
+            // Make sure the user isn't blocked
             if (blockedSet.stream().noneMatch(ev.getUser().getHostname()::matches)) {
 
-                if (Arrays.stream(commands.getRandomquote()).anyMatch(msg[0].substring(1)::equalsIgnoreCase)) {
+                if (Arrays.stream(commands.getRandomquote()).anyMatch(command::equalsIgnoreCase)) {
+                    ev.respondWith(new RandomQuoteCommand(log).getOutput());
+                    return;
+                }
 
-                    new RandomQuoteCommand(ev, log).runCommand();
-
-                } else if (Arrays.stream(commands.getSendline()).anyMatch(msg[0].substring(1)::equalsIgnoreCase)) {
-
+                if (Arrays.stream(commands.getSendline()).anyMatch(command::equalsIgnoreCase)) {
                     new SendLineCommand(ev, log, msg, config.getOps()).runCommand();
+                    return;
+                }
 
-                } else if (Arrays.stream(commands.getTacos()).anyMatch(msg[0].substring(1)::equalsIgnoreCase)) {
-
-                    new TacosCommand(ev, config.getTacos()).runCommand();
+                if (Arrays.stream(commands.getTacos()).anyMatch(command::equalsIgnoreCase)) {
+                    ev.respondWith(new TacosCommand(config.getTacos()).getOutput());
                 }
             }
         }

@@ -7,8 +7,9 @@ ssl: true
 # The server port
 port: 6697
 
-# The user modes the bot will automatically set. This is in IRC format (a string, eg. 'BXG')
-modes: B
+# The user modes the bot will automatically set. Modes will first be added then removed. This is in IRC format (a string, eg. 'BXG')
+addModes: B
+removeModes: ''
 
 # The bot's nickname
 nickname: Dumbo

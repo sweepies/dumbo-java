@@ -10,7 +10,8 @@ class Config {
     public String host;
     public Boolean ssl;
     public Integer port;
-    public String modes;
+    public String addModes;
+    public String removeModes;
     public String nickname;
     public String realname;
     public String ident;

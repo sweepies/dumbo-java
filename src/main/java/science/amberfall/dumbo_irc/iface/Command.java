@@ -1,6 +1,6 @@
 package science.amberfall.dumbo_irc.iface;
 
-@FunctionalInterface
 public interface Command {
+    String getOutput();
     void runCommand();
 }
