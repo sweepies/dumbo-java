@@ -3,12 +3,16 @@ package science.amberfall.dumbo_irc;
 import com.google.common.collect.Sets;
 import joptsimple.OptionParser;
 import joptsimple.OptionSet;
+import lombok.Getter;
 import org.apache.commons.io.FileUtils;
 import org.pircbotx.Configuration;
 import org.pircbotx.PircBotX;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.yaml.snakeyaml.Yaml;
+import science.amberfall.dumbo_irc.Command.RandomQuoteCommand;
+import science.amberfall.dumbo_irc.Command.SendLineCommand;
+import science.amberfall.dumbo_irc.Command.TacosCommand;
 
 import javax.net.SocketFactory;
 import javax.net.ssl.SSLSocketFactory;
@@ -19,13 +23,16 @@ import java.nio.charset.StandardCharsets;
 
 public class Dumbo {
 
-    private static Config config;
-
-    private static Commands commands;
-
+    @Getter private static final Logger log = LoggerFactory.getLogger("science.amberfall.dumbo_irc.Dumbo");
+    @Getter private static Config config;
     private static OptionSet options;
+    private final CommandHandler commandHandler = new CommandHandler();
 
-    private static final Logger log = LoggerFactory.getLogger("science.amberfall.dumbo_irc.Dumbo");
+    private Dumbo() {
+        commandHandler.registerCommand(new RandomQuoteCommand());
+        commandHandler.registerCommand(new SendLineCommand(config.getOps()));
+        commandHandler.registerCommand(new TacosCommand(config.getTacos()));
+    }
 
     public static void main(String[] args) throws Exception {
 
@@ -83,25 +90,6 @@ public class Dumbo {
         }
         // }
 
-        // Commands file logic {
-        try {
-            if (commandsFile.exists()) {
-                System.out.println("Commands file already exists, continuing.");
-            } else {
-                System.out.println("Creating default commands file..");
-                FileUtils.copyInputStreamToFile(Dumbo.class.getResourceAsStream("/commands.yml"), commandsFile);
-                System.out.println("Done!");
-            }
-
-            Dumbo.commands = yaml.loadAs(new FileReader("commands.yml"), Commands.class);
-
-        } catch (Exception e) {
-            System.out.println("Failed to get commands file:");
-            e.printStackTrace();
-            System.exit(1);
-        }
-        // }
-
         // If the makeconf option is present, we're done here
         if (options.has("makeconf")) {
             return;
@@ -111,27 +99,7 @@ public class Dumbo {
         getQuotes();
 
         // Make the bot config and start it
-        new PircBotX(makeConfig()).startBot();
-    }
-
-    private static Configuration makeConfig() {
-
-        return new Configuration.Builder()
-                .setName(config.getNickname())
-                .setRealName(config.getRealname())
-                .setNickservNick(config.getIdent())
-                .setNickservPassword(config.getPassword())
-                .setLogin(config.getIdent())
-                .setAutoSplitMessage(true)
-                .setEncoding(StandardCharsets.UTF_8)
-                .setAutoReconnect(true)
-                .addServer(config.getHost(), config.getPort())
-                // Convert the array of channels to an iterable HashSet
-                .addAutoJoinChannels(Sets.newHashSet(config.getChannels()))
-                // If SSL is enabled in the config, use the SSLSocketFactory instead of the normal one
-                .setSocketFactory(config.getSsl() ? SSLSocketFactory.getDefault() : SocketFactory.getDefault())
-                .addListener(new Listener(config, commands, log))
-                .buildConfiguration();
+        new PircBotX(new Dumbo().makeConfig()).startBot();
     }
 
     private static void getQuotes() {
@@ -152,5 +120,24 @@ public class Dumbo {
             e.printStackTrace();
             System.exit(1);
         }
+    }
+
+    private Configuration makeConfig() {
+        return new Configuration.Builder()
+                .setName(config.getNickname())
+                .setRealName(config.getRealname())
+                .setNickservNick(config.getIdent())
+                .setNickservPassword(config.getPassword())
+                .setLogin(config.getIdent())
+                .setAutoSplitMessage(true)
+                .setEncoding(StandardCharsets.UTF_8)
+                .setAutoReconnect(true)
+                .addServer(config.getHost(), config.getPort())
+                // Convert the array of channels to an iterable HashSet
+                .addAutoJoinChannels(Sets.newHashSet(config.getChannels()))
+                // If SSL is enabled in the config, use the SSLSocketFactory instead of the normal one
+                .setSocketFactory(config.getSsl() ? SSLSocketFactory.getDefault() : SocketFactory.getDefault())
+                .addListener(commandHandler)
+                .buildConfiguration();
     }
 }

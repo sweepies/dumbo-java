@@ -3,6 +3,7 @@
 # Get a random quote
 randomquote:
   - 'quote'
+  - 'randomquote'
   - 'dumbo'
   - 'dumball'
   - 'dum'

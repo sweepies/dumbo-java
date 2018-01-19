@@ -5,21 +5,21 @@ import lombok.Getter;
 // Class to parse the config file into
 
 @Getter
-class Config {
+public class Config {
 
-    public String host;
-    public Boolean ssl;
-    public Integer port;
-    public String addModes;
-    public String removeModes;
-    public String nickname;
-    public String realname;
-    public String ident;
-    public String password;
-    public Character delimiter;
-    public String[] channels;
-    public String[] ops;
-    public String[] blocked;
-    public Integer tacos;
+    @Getter public String host;
+    @Getter public Boolean ssl;
+    @Getter public Integer port;
+    @Getter public String addModes;
+    @Getter public String removeModes;
+    @Getter public String nickname;
+    @Getter public String realname;
+    @Getter public String ident;
+    @Getter public String password;
+    @Getter public Character delimiter;
+    @Getter public String[] channels;
+    @Getter public String[] ops;
+    @Getter public String[] blocked;
+    @Getter public Integer tacos;
 
 }

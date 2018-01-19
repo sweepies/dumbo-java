@@ -5,7 +5,7 @@ import lombok.Getter;
 // Class to parse the commands file into
 
 @Getter
-class Commands {
+public class Commands {
 
     public String[] randomquote;
     public String[] sendline;
