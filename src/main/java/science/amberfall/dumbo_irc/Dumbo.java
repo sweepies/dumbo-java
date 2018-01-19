@@ -47,26 +47,10 @@ public class Dumbo {
             System.exit(1);
         }
 
-        // Set config and commands file variables for use by the clean, config file, and commands file logic
+        // Set config file variable for use by the clean and config file logic
         final File configFile = new File("config.yml");
-        final File commandsFile = new File("commands.yml");
 
-        // Clean logic {
-        if (options.has("clean")) {
-            System.out.println("Deleting config.yml..");
-            if (!configFile.delete()) {
-                System.out.println("Unable to delete config.yml.");
-                System.exit(1);
-            }
-            System.out.println("Deleting commands.yml..");
-            if (!commandsFile.delete()) {
-                System.out.println("Unable to delete commands.yml.");
-                System.exit(1);
-            }
-        }
-        // }
-
-        // Create Yaml instance to read config and commands files
+        // Create Yaml instance to read config file
         final Yaml yaml = new Yaml();
 
         // Config file logic {
